@@ -6,15 +6,42 @@ const weather = document.querySelector('#weather');
 const IMG_URL = 'http://openweathermap.org/img/wn/';
 
 const getWeather = async(city) => {
-    const url = 'https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric';
+    weather.innerHTML = `
+    <div> 
+    <h4>Loading...<h4>
+    </div>
+    `
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
     const response = await fetch(url);
-    console.log(response);
+    const data = await response.json();
+    // console.log(response);
+    return showWeather(data);
 }
 
+const showWeather = (data) => {
+    if(data.cod == '404'){
+        weather.innerHTML = `
+        <div> 
+        <h4>City not found<h4>
+        </div>
+        `
+        return;
+    }
+    weather.innerHTML = `
+            <div>
+                <img src = "http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png" alt = "">
+            </div>
+            <div>
+                <h2>${data.main.temp} °C</h2>
+                <h4>${data.weather[0].main}</h4>
+            </div> 
+    `
+}
 form.addEventListener(
     "submit",
     function(event){
-        console.log(search.value)
+        const city  = search.value;
+        getWeather(city);
         event.preventDefault();
     }
 )
